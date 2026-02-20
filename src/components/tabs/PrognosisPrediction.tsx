@@ -243,13 +243,13 @@ function OutcomePrediction() {
                 borderRadius: 8,
                 border: '1px solid #e5e7eb',
               }}
-              formatter={(value: number, name: string) => {
+              formatter={(value: number | undefined, name: string | undefined) => {
                 const labels: Record<string, string> = {
                   high: '上限（95%CI）',
                   low: '下限（95%CI）',
                   median: '中央値',
                 };
-                return [value, labels[name] ?? name];
+                return [value ?? 0, labels[name ?? ''] ?? name ?? ''];
               }}
             />
             <Legend

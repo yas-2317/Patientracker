@@ -246,7 +246,7 @@ export default function EpisodeComparison() {
                     tickLine={false}
                   />
                   <Tooltip
-                    formatter={(value: number) => [`${value}点`, 'PHQ-9']}
+                    formatter={(value: number | undefined) => [`${value ?? 0}点`, 'PHQ-9']}
                     contentStyle={{
                       borderRadius: '8px',
                       border: '1px solid #e2e8f0',
@@ -388,7 +388,7 @@ export default function EpisodeComparison() {
                 wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }}
               />
               <Tooltip
-                formatter={(value: number, name: string) => [`${value}点`, name]}
+                formatter={(value: number | undefined, name: string | undefined) => [`${value ?? 0}点`, name ?? '']}
                 contentStyle={{
                   borderRadius: '8px',
                   border: '1px solid #e2e8f0',

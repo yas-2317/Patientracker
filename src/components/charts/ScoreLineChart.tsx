@@ -35,7 +35,10 @@ function formatDateFull(dateStr: string): string {
   return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
 }
 
-type CustomTooltipProps = TooltipProps<number, string> & {
+type CustomTooltipProps = {
+  active?: boolean;
+  payload?: Array<{ value: number }>;
+  label?: string;
   events: TreatmentEvent[];
 };
 
