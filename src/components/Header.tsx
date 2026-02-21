@@ -1,6 +1,11 @@
-import { patient } from '@/data/patient';
+'use client';
+
+import { usePatient } from '@/contexts/PatientContext';
+import PatientSelector from '@/components/PatientSelector';
 
 export default function Header() {
+  const { currentPatient } = usePatient();
+
   return (
     <header className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shadow-lg">
       <div className="flex items-center gap-3">
@@ -15,17 +20,11 @@ export default function Header() {
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <div className="text-right">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400">患者ID:</span>
-            <span className="text-sm font-mono font-semibold text-blue-300">{patient.id}</span>
-          </div>
-          <div className="text-sm text-slate-200">{patient.name}</div>
-        </div>
+        <PatientSelector />
         <div className="w-px h-10 bg-slate-700" />
         <div className="text-right">
           <div className="text-xs text-slate-400">担当医</div>
-          <div className="text-sm text-slate-200">{patient.primaryTherapist}</div>
+          <div className="text-sm text-slate-200">{currentPatient.primaryTherapist}</div>
         </div>
       </div>
     </header>

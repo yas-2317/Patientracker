@@ -1,6 +1,7 @@
 'use client';
 
-import { PHQ9DataPoint, PHQ9Item, phq9ItemLabels } from '@/data/assessments';
+import type { PHQ9DataPoint, PHQ9Item } from '@/types/patient';
+import { phq9ItemLabels } from '@/types/patient';
 
 type Props = {
   data: PHQ9DataPoint[];

@@ -1,12 +1,10 @@
 'use client';
 
+import { useMemo } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, ReferenceLine,
 } from 'recharts';
-import { phq9Data, qidsData, hamdData, madrsData } from '@/data/assessments';
-import { treatmentEvents } from '@/data/events';
-import { patient } from '@/data/patient';
-import { personas, outcomeScenarios } from '@/data/personas';
+import { usePatient } from '@/contexts/PatientContext';
 
 // ---- 重症度判定 ----
 type TestKey = 'PHQ-9' | 'QIDS' | 'HAM-D' | 'MADRS';
@@ -39,36 +37,46 @@ function getSeverity(test: TestKey, score: number): { label: string; color: stri
   }
 }
 
-// ---- データ ----
-const latestPhq9 = phq9Data[phq9Data.length - 1].total;
-const latestQids = qidsData[qidsData.length - 1].total;
-const latestHamd = hamdData[hamdData.length - 1].total;
-const latestMadrs = madrsData[madrsData.length - 1].total;
-
-const scores: { test: TestKey; latest: number; max: number; color: string; prev: number }[] = [
-  { test: 'PHQ-9', latest: latestPhq9,  max: 27, color: '#6366f1', prev: phq9Data[phq9Data.length - 2].total },
-  { test: 'QIDS',  latest: latestQids,  max: 27, color: '#8b5cf6', prev: qidsData[qidsData.length - 2].total },
-  { test: 'HAM-D', latest: latestHamd,  max: 52, color: '#3b82f6', prev: hamdData[hamdData.length - 2].total },
-  { test: 'MADRS', latest: latestMadrs, max: 60, color: '#06b6d4', prev: madrsData[madrsData.length - 2].total },
-];
-
-// PHQ-9 スパークライン用（最新6点）
-const sparkData = phq9Data.slice(-6).map((d) => ({
-  date: d.date.slice(5), // MM-DD
-  score: d.total,
-}));
-
-// 改善率
-const baselinePhq9 = phq9Data[0].total;
-const improvePct = Math.round(((baselinePhq9 - latestPhq9) / baselinePhq9) * 100);
-
-// 最有力ペルソナ
-const topPersona = [...personas].sort((a, b) => b.probability - a.probability)[0];
-
-// 推奨シナリオ
-const bestScenario = outcomeScenarios[2]; // CBT-I追加
-
 export default function Overview() {
+  const { currentPatient } = usePatient();
+  const {
+    phq9Data, qidsData, hamdData, madrsData,
+    treatmentEvents, personas, outcomeScenarios,
+  } = currentPatient;
+  const patient = currentPatient;
+
+  const latestPhq9  = phq9Data[phq9Data.length - 1].total;
+  const latestQids  = qidsData[qidsData.length - 1].total;
+  const latestHamd  = hamdData[hamdData.length - 1].total;
+  const latestMadrs = madrsData[madrsData.length - 1].total;
+
+  const scores = useMemo<{ test: TestKey; latest: number; max: number; color: string; prev: number }[]>(() => [
+    { test: 'PHQ-9', latest: latestPhq9,  max: 27, color: '#6366f1', prev: phq9Data[phq9Data.length - 2].total },
+    { test: 'QIDS',  latest: latestQids,  max: 27, color: '#8b5cf6', prev: qidsData[qidsData.length - 2].total },
+    { test: 'HAM-D', latest: latestHamd,  max: 52, color: '#3b82f6', prev: hamdData[hamdData.length - 2].total },
+    { test: 'MADRS', latest: latestMadrs, max: 60, color: '#06b6d4', prev: madrsData[madrsData.length - 2].total },
+  ], [latestPhq9, latestQids, latestHamd, latestMadrs, phq9Data, qidsData, hamdData, madrsData]);
+
+  const sparkData = useMemo(() =>
+    phq9Data.slice(-6).map((d) => ({ date: d.date.slice(5), score: d.total })),
+    [phq9Data]
+  );
+
+  const baselinePhq9 = phq9Data[0].total;
+  const improvePct = baselinePhq9 > 0
+    ? Math.round(((baselinePhq9 - latestPhq9) / baselinePhq9) * 100)
+    : 0;
+
+  const topPersona = useMemo(() =>
+    [...personas].sort((a, b) => b.probability - a.probability)[0],
+    [personas]
+  );
+
+  const bestScenario = outcomeScenarios[2] ?? outcomeScenarios[0];
+
+  const medCategory = patient.currentMedication.category.match(/^([A-Z]+)/)?.[1] ?? 'SSRI';
+  const therapyShort = patient.psychotherapy.type.match(/（([^）]+)）/)?.[1] ?? 'CBT';
+
   return (
     <div className="grid grid-cols-12 gap-4 h-full" style={{ maxHeight: 'calc(100vh - 140px)' }}>
 
@@ -82,7 +90,7 @@ export default function Overview() {
               {patient.name[0]}
             </div>
             <div>
-              <div className="text-sm font-semibold">{patient.name}</div>
+              <div className="text-sm font-semibold">{patient.name.replace('（匿名）', '')}</div>
               <div className="text-xs text-slate-400">{patient.id}</div>
             </div>
           </div>
@@ -101,8 +109,8 @@ export default function Overview() {
             </div>
           </dl>
           <div className="mt-3 pt-3 border-t border-slate-700 flex flex-wrap gap-1.5">
-            <span className="px-2 py-0.5 bg-blue-600 rounded text-xs">SSRI</span>
-            <span className="px-2 py-0.5 bg-emerald-600 rounded text-xs">CBT</span>
+            <span className="px-2 py-0.5 bg-blue-600 rounded text-xs">{medCategory}</span>
+            <span className="px-2 py-0.5 bg-emerald-600 rounded text-xs">{therapyShort}</span>
           </div>
         </div>
 
@@ -110,7 +118,9 @@ export default function Overview() {
         <div className="bg-white rounded-xl shadow-sm p-4 flex-1">
           <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">治療経過</div>
           <div className="text-center mb-3">
-            <div className="text-4xl font-bold text-emerald-600">-{improvePct}%</div>
+            <div className={`text-4xl font-bold ${improvePct >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+              {improvePct >= 0 ? '-' : '+'}{Math.abs(improvePct)}%
+            </div>
             <div className="text-xs text-slate-500 mt-0.5">PHQ-9 改善率</div>
           </div>
           <div className="flex justify-between text-center text-xs mb-3">
@@ -120,7 +130,7 @@ export default function Overview() {
             </div>
             <div className="flex items-center text-slate-400 text-lg">→</div>
             <div>
-              <div className="text-lg font-bold text-emerald-600">{latestPhq9}</div>
+              <div className={`text-lg font-bold ${improvePct >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>{latestPhq9}</div>
               <div className="text-slate-400">最新</div>
             </div>
           </div>

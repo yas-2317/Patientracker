@@ -1,16 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import {
-  phq9Data,
-  qidsData,
-  hamdData,
-  madrsData,
-  PHQ9DataPoint,
-  SimpleDataPoint,
-} from '@/data/assessments';
-import { treatmentEvents } from '@/data/events';
-import { patient } from '@/data/patient';
+import type { PHQ9DataPoint, SimpleDataPoint } from '@/types/patient';
+import { usePatient } from '@/contexts/PatientContext';
 import ScoreLineChart from '@/components/charts/ScoreLineChart';
 import HeatmapChart from '@/components/charts/HeatmapChart';
 
@@ -54,16 +46,6 @@ function getSeverity(test: TestKey, score: number): { label: string; color: stri
 
 // ---- テスト設定 ----
 
-const testConfig: Record<
-  TestKey,
-  { color: string; maxScore: number; rawData: (PHQ9DataPoint | SimpleDataPoint)[] }
-> = {
-  'PHQ-9': { color: '#6366f1', maxScore: 27, rawData: phq9Data },
-  'QIDS':  { color: '#8b5cf6', maxScore: 27, rawData: qidsData },
-  'HAM-D': { color: '#3b82f6', maxScore: 52, rawData: hamdData },
-  'MADRS': { color: '#06b6d4', maxScore: 60, rawData: madrsData },
-};
-
 // ---- 期間フィルタ ----
 
 const periodDays: Record<PeriodKey, number> = {
@@ -88,8 +70,19 @@ function filterByPeriod<T extends { date: string }>(data: T[], days: number): T[
 // ---- メインコンポーネント ----
 
 export default function PatientTimeline() {
+  const { currentPatient } = usePatient();
+  const { phq9Data, qidsData, hamdData, madrsData, treatmentEvents } = currentPatient;
+  const patient = currentPatient;
+
   const [selectedTest, setSelectedTest] = useState<TestKey>('PHQ-9');
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodKey>('all');
+
+  const testConfig = useMemo<Record<TestKey, { color: string; maxScore: number; rawData: (PHQ9DataPoint | SimpleDataPoint)[] }>>(() => ({
+    'PHQ-9': { color: '#6366f1', maxScore: 27, rawData: phq9Data },
+    'QIDS':  { color: '#8b5cf6', maxScore: 27, rawData: qidsData },
+    'HAM-D': { color: '#3b82f6', maxScore: 52, rawData: hamdData },
+    'MADRS': { color: '#06b6d4', maxScore: 60, rawData: madrsData },
+  }), [phq9Data, qidsData, hamdData, madrsData]);
 
   const { color, maxScore, rawData } = testConfig[selectedTest];
   const days = periodDays[selectedPeriod];
