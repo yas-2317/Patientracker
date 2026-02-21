@@ -142,21 +142,21 @@ function generateEvents(rng: SeededRandom, med: typeof TREATMENT_MEDS[0], startD
   return [
     {
       date: fmtDate(addDays(startDate, 14)),
-      type: 'medication_start',
+      type: 'medication_start' as const,
       label: '投薬開始',
       detail: `${med.name} 開始`,
       color: '#3b82f6',
     },
     {
       date: fmtDate(addDays(startDate, 56)),
-      type: 'medication_increase',
+      type: 'medication_increase' as const,
       label: '投薬増量',
       detail: med.increase,
       color: '#f59e0b',
     },
     {
       date: fmtDate(addDays(startDate, 42)),
-      type: 'therapy_start',
+      type: 'therapy_start' as const,
       label: '心理療法開始',
       detail: `${rng.pick(THERAPY_TYPES)}（週1回）開始`,
       color: '#10b981',

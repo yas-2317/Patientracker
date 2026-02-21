@@ -93,7 +93,6 @@ export default function EpisodeComparison() {
   }, [treatmentEvents, phq9Data]);
 
   const {
-    beforeData, duringData, afterData,
     lineChartData, radarData,
     firstDate, lastDate, phaseColumns,
   } = useMemo(() => {

@@ -97,12 +97,12 @@ export default function PatientTimeline() {
   const filteredPhq9Data = useMemo(() => {
     if (selectedTest !== 'PHQ-9') return [];
     return filterByPeriod(phq9Data, days);
-  }, [selectedTest, days]);
+  }, [selectedTest, days, phq9Data]);
 
   // フィルタ後の治療イベント
   const filteredEvents = useMemo(() => {
     return filterByPeriod(treatmentEvents, days);
-  }, [days]);
+  }, [days, treatmentEvents]);
 
   // 最新スコア
   const latestScore = filteredScoreData.length > 0
