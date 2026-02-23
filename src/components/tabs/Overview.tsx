@@ -1,10 +1,11 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, ReferenceLine,
 } from 'recharts';
 import { usePatient } from '@/contexts/PatientContext';
+import AddTestModal from '@/components/AddTestModal';
 
 // ---- 重症度判定 ----
 type TestKey = 'PHQ-9' | 'QIDS' | 'HAM-D' | 'MADRS';
@@ -39,6 +40,7 @@ function getSeverity(test: TestKey, score: number): { label: string; color: stri
 
 export default function Overview() {
   const { currentPatient } = usePatient();
+  const [isAddTestOpen, setIsAddTestOpen] = useState(false);
   const {
     phq9Data, qidsData, hamdData, madrsData,
     treatmentEvents, personas, outcomeScenarios,
@@ -78,6 +80,7 @@ export default function Overview() {
   const therapyShort = patient.psychotherapy.type.match(/（([^）]+)）/)?.[1] ?? 'CBT';
 
   return (
+    <>
     <div className="grid grid-cols-12 gap-4 h-full" style={{ maxHeight: 'calc(100vh - 140px)' }}>
 
       {/* ===== 左列 (3/12) ===== */}
@@ -108,9 +111,15 @@ export default function Overview() {
               <dd className="text-slate-100">{patient.primaryTherapist}</dd>
             </div>
           </dl>
-          <div className="mt-3 pt-3 border-t border-slate-700 flex flex-wrap gap-1.5">
+          <div className="mt-3 pt-3 border-t border-slate-700 flex flex-wrap items-center gap-1.5">
             <span className="px-2 py-0.5 bg-blue-600 rounded text-xs">{medCategory}</span>
             <span className="px-2 py-0.5 bg-emerald-600 rounded text-xs">{therapyShort}</span>
+            <button
+              onClick={() => setIsAddTestOpen(true)}
+              className="ml-auto px-2.5 py-1 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white text-xs font-semibold transition-colors flex items-center gap-1"
+            >
+              <span>+</span> 検査追加
+            </button>
           </div>
         </div>
 
@@ -301,5 +310,8 @@ export default function Overview() {
         </div>
       </div>
     </div>
+
+    <AddTestModal isOpen={isAddTestOpen} onClose={() => setIsAddTestOpen(false)} />
+    </>
   );
 }

@@ -57,6 +57,8 @@ export type SimilarPatient = {
 
 export type ImprovementPattern = 'improver' | 'stable' | 'worsen';
 
+export type TestKey = 'PHQ-9' | 'QIDS' | 'HAM-D' | 'MADRS';
+
 export type PatientData = {
   id: string;
   name: string;
