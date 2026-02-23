@@ -60,7 +60,7 @@ export default function PatientSelector() {
         <div className="bg-slate-900 text-white px-5 py-4 flex items-center justify-between shrink-0">
           <div>
             <h2 className="text-base font-semibold">患者を選択</h2>
-            <p className="text-xs text-slate-400">100名のダミーデータ</p>
+            <p className="text-xs text-slate-400">{summaries.length}名</p>
           </div>
           <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-white p-1">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,6 +107,9 @@ export default function PatientSelector() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <span className="text-xs font-mono text-slate-400">{s.id}</span>
+                    {s.isUserAdded && (
+                      <span className="text-xs px-1.5 py-0.5 rounded-full font-medium bg-blue-100 text-blue-700">U</span>
+                    )}
                     <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${sev.cls}`}>{sev.label}</span>
                   </div>
                   <div className="text-sm font-medium text-slate-800 truncate">{s.name.replace('（匿名）', '')}</div>

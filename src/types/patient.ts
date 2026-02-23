@@ -91,6 +91,7 @@ export type PatientSummary = {
   ageGroup: string;
   gender: '男性' | '女性';
   improvementPattern: ImprovementPattern;
+  isUserAdded?: boolean;
 };
 
 export const phq9ItemLabels: Record<keyof PHQ9Item, string> = {

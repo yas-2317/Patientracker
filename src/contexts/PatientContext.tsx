@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
 import type { PatientData, PatientSummary, PHQ9DataPoint, SimpleDataPoint, TestKey } from '@/types/patient';
-import { getAllPatients, getPatientSummaries } from '@/lib/patientGenerator';
+import { getAllPatients } from '@/lib/patientGenerator';
 import { generateAnonymousId, saveCustomPatients, loadCustomPatients } from '@/lib/patientStorage';
 
 const STORAGE_KEY = 'patientracker_results';
@@ -51,11 +51,22 @@ export function PatientProvider({ children }: { children: React.ReactNode }) {
     setCustomPatients(loadCustomPatients());
   }, []);
 
-  const summaries = useMemo(() => getPatientSummaries(), []);
-
   const allPatients = useMemo(
     () => [...BASE_PATIENTS, ...customPatients],
     [customPatients],
+  );
+
+  const summaries = useMemo((): PatientSummary[] =>
+    allPatients.map(p => ({
+      id: p.id,
+      name: p.name,
+      latestPhq9: p.phq9Data[p.phq9Data.length - 1]?.total ?? 0,
+      ageGroup: p.ageGroup,
+      gender: p.gender,
+      improvementPattern: p.improvementPattern,
+      isUserAdded: p.isUserAdded,
+    })),
+    [allPatients],
   );
 
   const currentPatient = useMemo((): PatientData => {
