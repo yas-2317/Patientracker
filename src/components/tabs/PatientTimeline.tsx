@@ -1,48 +1,15 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import type { PHQ9DataPoint, SimpleDataPoint } from '@/types/patient';
+import type { PHQ9DataPoint, SimpleDataPoint, TestKey } from '@/types/patient';
 import { usePatient } from '@/contexts/PatientContext';
 import ScoreLineChart from '@/components/charts/ScoreLineChart';
 import HeatmapChart from '@/components/charts/HeatmapChart';
+import { getSeverity } from '@/lib/severity';
 
 // ---- 型定義 ----
 
-type TestKey = 'PHQ-9' | 'QIDS' | 'HAM-D' | 'MADRS';
 type PeriodKey = '3m' | '6m' | 'all';
-
-// ---- 重症度判定 ----
-
-function getSeverity(test: TestKey, score: number): { label: string; color: string; bg: string } {
-  switch (test) {
-    case 'PHQ-9':
-      if (score <= 4)  return { label: '軽微',     color: '#16a34a', bg: '#dcfce7' };
-      if (score <= 9)  return { label: '軽度',     color: '#ca8a04', bg: '#fef9c3' };
-      if (score <= 14) return { label: '中等度',   color: '#ea580c', bg: '#ffedd5' };
-      if (score <= 19) return { label: '中等重度', color: '#dc2626', bg: '#fee2e2' };
-      return                  { label: '重度',     color: '#991b1b', bg: '#fecaca' };
-
-    case 'QIDS':
-      if (score <= 5)  return { label: '正常',     color: '#16a34a', bg: '#dcfce7' };
-      if (score <= 10) return { label: '軽度',     color: '#ca8a04', bg: '#fef9c3' };
-      if (score <= 15) return { label: '中等度',   color: '#ea580c', bg: '#ffedd5' };
-      if (score <= 20) return { label: '重度',     color: '#dc2626', bg: '#fee2e2' };
-      return                  { label: '最重度',   color: '#991b1b', bg: '#fecaca' };
-
-    case 'HAM-D':
-      if (score <= 7)  return { label: '正常',     color: '#16a34a', bg: '#dcfce7' };
-      if (score <= 13) return { label: '軽度',     color: '#ca8a04', bg: '#fef9c3' };
-      if (score <= 18) return { label: '中等度',   color: '#ea580c', bg: '#ffedd5' };
-      if (score <= 22) return { label: '重度',     color: '#dc2626', bg: '#fee2e2' };
-      return                  { label: '最重度',   color: '#991b1b', bg: '#fecaca' };
-
-    case 'MADRS':
-      if (score <= 6)  return { label: '正常',     color: '#16a34a', bg: '#dcfce7' };
-      if (score <= 19) return { label: '軽度',     color: '#ca8a04', bg: '#fef9c3' };
-      if (score <= 34) return { label: '中等度',   color: '#ea580c', bg: '#ffedd5' };
-      return                  { label: '重度',     color: '#dc2626', bg: '#fee2e2' };
-  }
-}
 
 // ---- テスト設定 ----
 
