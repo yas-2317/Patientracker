@@ -7,6 +7,7 @@ import Overview from '@/components/tabs/Overview';
 import PatientTimeline from '@/components/tabs/PatientTimeline';
 import EpisodeComparison from '@/components/tabs/EpisodeComparison';
 import PrognosisPrediction from '@/components/tabs/PrognosisPrediction';
+import AddPatient from '@/components/tabs/AddPatient';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -15,11 +16,12 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <Header />
       <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-      <main className="flex-1 p-6 bg-slate-50 overflow-hidden">
+      <main className="flex-1 p-6 bg-slate-50 overflow-auto">
         {activeTab === 'overview' && <Overview />}
         {activeTab === 'timeline' && <PatientTimeline />}
         {activeTab === 'comparison' && <EpisodeComparison />}
         {activeTab === 'prognosis' && <PrognosisPrediction />}
+        {activeTab === 'addpatient' && <AddPatient />}
       </main>
     </div>
   );

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { PatientProvider } from '@/contexts/PatientContext';
+import { AuthProvider } from '@/contexts/AuthContext';
+import LockGate from '@/components/LockGate';
 
 export const metadata: Metadata = {
   title: 'Depression Treatment Dashboard',
@@ -11,7 +13,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja">
       <body>
-        <PatientProvider>{children}</PatientProvider>
+        <AuthProvider>
+          <PatientProvider>
+            <LockGate>{children}</LockGate>
+          </PatientProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -78,6 +78,10 @@ export type PatientData = {
   personas: Persona[];
   outcomeScenarios: OutcomeScenario[];
   similarPatients: SimilarPatient[];
+  // ユーザー追加患者用フィールド
+  isUserAdded?: boolean;
+  realName?: string;       // 実名（匿名ID と分離保管）
+  institutionalId?: string; // 施設ID（後から差し替え可能）
 };
 
 export type PatientSummary = {
@@ -87,6 +91,7 @@ export type PatientSummary = {
   ageGroup: string;
   gender: '男性' | '女性';
   improvementPattern: ImprovementPattern;
+  isUserAdded?: boolean;
 };
 
 export const phq9ItemLabels: Record<keyof PHQ9Item, string> = {
