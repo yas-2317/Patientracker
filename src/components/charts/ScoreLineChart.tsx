@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
   TooltipProps,
 } from 'recharts';
-import { TreatmentEvent } from '@/data/events';
+import type { TreatmentEvent } from '@/types/patient';
 
 type ScoreDataPoint = {
   date: string;
